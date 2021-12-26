@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 /**
  * Medoo Database Framework.
  *
@@ -16,11 +16,11 @@ declare(strict_types=1);
 
 namespace Medoo;
 
-use PDO;
 use Exception;
+use InvalidArgumentException;
+use PDO;
 use PDOException;
 use PDOStatement;
-use InvalidArgumentException;
 
 /**
  * The Medoo raw object.
@@ -235,8 +235,8 @@ class Medoo
 
         $option = $options['option'] ?? [];
         $commands = (isset($options['command']) && is_array($options['command'])) ?
-            $options['command'] :
-            [];
+        $options['command'] :
+        [];
 
         switch ($this->type) {
 
@@ -291,7 +291,7 @@ class Medoo
                 case 'mysql':
                     $attr = [
                         'driver' => 'mysql',
-                        'dbname' => $options['database']
+                        'dbname' => $options['database'],
                     ];
 
                     if (isset($options['socket'])) {
@@ -310,7 +310,7 @@ class Medoo
                     $attr = [
                         'driver' => 'pgsql',
                         'host' => $options['host'],
-                        'dbname' => $options['database']
+                        'dbname' => $options['database'],
                     ];
 
                     if ($isPort) {
@@ -323,7 +323,7 @@ class Medoo
                     $attr = [
                         'driver' => 'dblib',
                         'host' => $options['host'],
-                        'dbname' => $options['database']
+                        'dbname' => $options['database'],
                     ];
 
                     if ($isPort) {
@@ -336,8 +336,8 @@ class Medoo
                     $attr = [
                         'driver' => 'oci',
                         'dbname' => $options['host'] ?
-                            '//' . $options['host'] . ($isPort ? ':' . $port : ':1521') . '/' . $options['database'] :
-                            $options['database']
+                        '//' . $options['host'] . ($isPort ? ':' . $port : ':1521') . '/' . $options['database'] :
+                        $options['database'],
                     ];
 
                     if (isset($options['charset'])) {
@@ -351,7 +351,7 @@ class Medoo
                         $attr = [
                             'driver' => 'dblib',
                             'host' => $options['host'] . ($isPort ? ':' . $port : ''),
-                            'dbname' => $options['database']
+                            'dbname' => $options['database'],
                         ];
 
                         if (isset($options['appname'])) {
@@ -365,7 +365,7 @@ class Medoo
                         $attr = [
                             'driver' => 'sqlsrv',
                             'Server' => $options['host'] . ($isPort ? ',' . $port : ''),
-                            'Database' => $options['database']
+                            'Database' => $options['database'],
                         ];
 
                         if (isset($options['appname'])) {
@@ -409,7 +409,7 @@ class Medoo
                 case 'sqlite':
                     $attr = [
                         'driver' => 'sqlite',
-                        $options['database']
+                        $options['database'],
                     ];
 
                     break;
@@ -462,7 +462,7 @@ class Medoo
                     in_array($options['error'], [
                         PDO::ERRMODE_SILENT,
                         PDO::ERRMODE_WARNING,
-                        PDO::ERRMODE_EXCEPTION
+                        PDO::ERRMODE_EXCEPTION,
                     ]) ?
                     $options['error'] :
                     PDO::ERRMODE_SILENT
@@ -591,7 +591,7 @@ class Medoo
     {
         $identifier = [
             'mysql' => '`$1`',
-            'mssql' => '[$1]'
+            'mssql' => '[$1]',
         ];
 
         $statement = preg_replace(
@@ -725,8 +725,8 @@ class Medoo
     {
         if (preg_match('/^[\p{L}_][\p{L}\p{N}@$#\-_]*(\.?[\p{L}_][\p{L}\p{N}@$#\-_]*)?$/u', $column)) {
             return strpos($column, '.') !== false ?
-                '"' . $this->prefix . str_replace('.', '"."', $column) . '"' :
-                '"' . $column . '"';
+            '"' . $this->prefix . str_replace('.', '"."', $column) . '"' :
+            '"' . $column . '"';
         }
 
         throw new InvalidArgumentException("Incorrect column name: {$column}.");
@@ -748,7 +748,7 @@ class Medoo
             'boolean' => PDO::PARAM_BOOL,
             'string' => PDO::PARAM_STR,
             'object' => PDO::PARAM_STR,
-            'resource' => PDO::PARAM_LOB
+            'resource' => PDO::PARAM_LOB,
         ];
 
         if ($type === 'boolean') {
@@ -993,7 +993,11 @@ class Medoo
 
                 case 'object':
                     if ($raw = $this->buildRaw($value, $map)) {
-                        $stack[] = "{$column} = {$raw}";
+                        if (stripos($raw, 'FIND_IN_SET') === false) {
+                            $stack[] = "{$column} = {$raw}";
+                        } else {
+                            $stack[] = $raw;
+                        }
                     }
                     break;
 
@@ -1040,7 +1044,7 @@ class Medoo
                         'natural' => 'IN NATURAL LANGUAGE MODE',
                         'natural+query' => 'IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION',
                         'boolean' => 'IN BOOLEAN MODE',
-                        'query' => 'WITH QUERY EXPANSION'
+                        'query' => 'WITH QUERY EXPANSION',
                     ];
 
                     if (isset($match['mode'], $options[$match['mode']])) {
@@ -1267,7 +1271,7 @@ class Medoo
             '>' => 'LEFT',
             '<' => 'RIGHT',
             '<>' => 'FULL',
-            '><' => 'INNER'
+            '><' => 'INNER',
         ];
 
         foreach ($join as $subtable => $relation) {
@@ -1294,11 +1298,11 @@ class Medoo
 
                         $joins[] = (
                             strpos($key, '.') > 0 ?
-                                // For ['tableB.column' => 'column']
-                                $this->columnQuote($key) :
+                            // For ['tableB.column' => 'column']
+                            $this->columnQuote($key) :
 
-                                // For ['column1' => 'column2']
-                                $table . '.' . $this->columnQuote($key)
+                            // For ['column1' => 'column2']
+                            $table . '.' . $this->columnQuote($key)
                         ) .
                         ' = ' .
                         $this->tableQuote($match['alias'] ?? $match['table']) . '.' . $this->columnQuote($value);
@@ -1341,19 +1345,19 @@ class Medoo
                 preg_match('/([\p{L}_][\p{L}\p{N}@$#\-_]*\.)?(?<column>[\p{L}_][\p{L}\p{N}@$#\-_]*)(?:\s*\((?<alias>[\p{L}_][\p{L}\p{N}@$#\-_]*)\))?(?:\s*\[(?<type>(?:String|Bool|Int|Number|Object|JSON))\])?/u', $value, $keyMatch);
 
                 $columnKey = !empty($keyMatch['alias']) ?
-                    $keyMatch['alias'] :
-                    $keyMatch['column'];
+                $keyMatch['alias'] :
+                $keyMatch['column'];
 
                 $stack[$value] = isset($keyMatch['type']) ?
-                    [$columnKey, $keyMatch['type']] :
-                    [$columnKey, 'String'];
+                [$columnKey, $keyMatch['type']] :
+                [$columnKey, 'String'];
             } elseif ($this->isRaw($value)) {
                 preg_match('/([\p{L}_][\p{L}\p{N}@$#\-_]*\.)?(?<column>[\p{L}_][\p{L}\p{N}@$#\-_]*)(\s*\[(?<type>(String|Bool|Int|Number))\])?/u', $key, $keyMatch);
                 $columnKey = $keyMatch['column'];
 
                 $stack[$key] = isset($keyMatch['type']) ?
-                    [$columnKey, $keyMatch['type']] :
-                    [$columnKey, 'String'];
+                [$columnKey, $keyMatch['type']] :
+                [$columnKey, 'String'];
             } elseif (!is_int($key) && is_array($value)) {
                 if ($root && count(array_keys($columns)) === 1) {
                     $stack[$key] = [$key, 'String'];
@@ -1492,9 +1496,9 @@ class Medoo
         );
 
         $query .= ' RETURNING ' .
-                    implode(', ', array_map([$this, 'columnQuote'], $returnColumns)) .
-                    ' INTO ' .
-                    implode(', ', array_keys($data));
+        implode(', ', array_map([$this, 'columnQuote'], $returnColumns)) .
+        ' INTO ' .
+        implode(', ', array_keys($data));
 
         return $this->exec($query, $map, function ($statement) use (&$data) {
             // @codeCoverageIgnoreStart
@@ -1702,9 +1706,9 @@ class Medoo
                     case 'array':
                         $map[$mapKey] = [
                             strpos($key, '[JSON]') === strlen($key) - 6 ?
-                                json_encode($value) :
-                                serialize($value),
-                            PDO::PARAM_STR
+                            json_encode($value) :
+                            serialize($value),
+                            PDO::PARAM_STR,
                         ];
                         break;
 
@@ -1795,9 +1799,9 @@ class Medoo
                     case 'array':
                         $map[$mapKey] = [
                             strpos($key, '[JSON]') === strlen($key) - 6 ?
-                                json_encode($value) :
-                                serialize($value),
-                            PDO::PARAM_STR
+                            json_encode($value) :
+                            serialize($value),
+                            PDO::PARAM_STR,
                         ];
                         break;
 
@@ -1944,8 +1948,8 @@ class Medoo
 
         $query = $this->exec(
             $this->type === 'mssql' ?
-                $this->selectContext($table, $map, $join, $column, $where, Medoo::raw('TOP 1 1')) :
-                'SELECT EXISTS(' . $this->selectContext($table, $map, $join, $column, $where, 1) . ')',
+            $this->selectContext($table, $map, $join, $column, $where, Medoo::raw('TOP 1 1')) :
+            'SELECT EXISTS(' . $this->selectContext($table, $map, $join, $column, $where, 1) . ')',
             $map
         );
 
@@ -1973,7 +1977,7 @@ class Medoo
     {
         $orderRaw = $this->raw(
             $this->type === 'mysql' ? 'RAND()'
-                : ($this->type === 'mssql' ? 'NEWID()'
+            : ($this->type === 'mssql' ? 'NEWID()'
                 : 'RANDOM()')
         );
 
@@ -2219,7 +2223,7 @@ class Medoo
             'driver' => 'DRIVER_NAME',
             'client' => 'CLIENT_VERSION',
             'version' => 'SERVER_VERSION',
-            'connection' => 'CONNECTION_STATUS'
+            'connection' => 'CONNECTION_STATUS',
         ];
 
         foreach ($output as $key => $value) {

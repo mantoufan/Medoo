@@ -1,13 +1,13 @@
 {
-	"name": "catfan/medoo",
+	"name": "mantoufan/medoo",
 	"type": "framework",
 	"description": "The lightweight PHP database framework to accelerate development",
 	"keywords": ["database", "database library", "lightweight", "PHP framework", "SQL", "MySQL", "MSSQL", "SQLite", "PostgreSQL", "MariaDB", "Oracle"],
 	"homepage": "https://medoo.in",
 	"license": "MIT",
 	"support": {
-		"issues": "https://github.com/catfan/Medoo/issues",
-		"source": "https://github.com/catfan/Medoo"
+		"issues": "https://github.com/mantoufan/Medoo/issues",
+		"source": "https://github.com/mantoufan/Medoo"
 	},
 	"authors": [
 		{"name": "Angel Lai", "email": "angel@medoo.in"}
